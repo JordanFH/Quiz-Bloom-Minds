@@ -24,10 +24,20 @@ const Quiz = ({ params }) => {
     const fetchQuestions = async () => {
       const response = await fetch("/data/questions.json");
       if (response.ok) {
+        
         const data = await response.json();
-        const subjectData = data.subjects.find(
-          (s) => s.name.toLowerCase() === subject
-        );
+        console.log(data);
+       const normalize = (str) =>
+  str.toLowerCase()
+    .normalize("NFD") // elimina tildes
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-") // convierte espacios en guiones
+    .replace(/[()]/g, ""); // elimina paréntesis
+
+const subjectData = data.subjects.find(
+  (s) => normalize(s.name) === subject
+);
+
         setQuestions(subjectData ? subjectData.questions : []);
       } else {
         console.error("Failed to fetch questions");
